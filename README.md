@@ -11,22 +11,22 @@ Frontend:
         Test: Login as Customer     [X]
                         as Notar    [-]
         Customer:
-            Home page
-                -All folders
-            Client page
-                -Standard user information
-            Create Folder page
-                -Add files in folders
-                    -propose to sign
+            Home page                                       [-]
+                -All folders                                [-]
+            Client page                                     [-]
+                -Standard user information                  [-]
+            Create Folder page                              [-]
+                -Add files in folders                       [-]
+                    -propose to sign                        [-]
         Notar:
-            Home page
-                -Public requests
-                    - view folder (get folder as posonal)
+            Home page                                       [-]
+                -Public requests                            [-]
+                    - view folder (get folder as posonal)   [-]
 
-                -Personal list of folders
-                    - Sign/regect folder/file
-            Client page
-                - standard user information
+                -Personal list of folders                   [-]
+                    - Sign/regect folder/file               [-]
+            Client page                                     [-]
+                - standard user information                 [-]
 
 Backend:
 
