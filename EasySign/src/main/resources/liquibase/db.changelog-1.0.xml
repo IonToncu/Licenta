@@ -1,0 +1,220 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+
+    <changeSet id="1672858532456-1" author="toncu">
+        <createTable tableName="notary">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_notary"/>
+            </column>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="created" type="DATETIME"/>
+            <column name="updated" type="DATETIME"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="file" type="LONGBLOB"/>
+        </createTable>
+        <addUniqueConstraint columnNames="email" constraintName="uc_notary_email" tableName="notary"/>
+    </changeSet>
+
+    <changeSet id="1672858563823-1" author="toncu">
+        <createTable tableName="customer">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_customer"/>
+            </column>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="created" type="DATETIME"/>
+            <column name="updated" type="DATETIME"/>
+            <column name="status" type="VARCHAR(255)"/>
+        </createTable>
+        <addUniqueConstraint columnNames="email" constraintName="uc_customer_email" tableName="customer"/>
+    </changeSet>
+
+    <changeSet id="1672858606510-1" author="toncu">
+        <createTable tableName="documents">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_documents"/>
+            </column>
+            <column name="created" type="DATETIME"/>
+            <column name="updated" type="DATETIME"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="file_name" type="VARCHAR(255)"/>
+            <column name="file" type="LONGBLOB"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1672858645428-1" author="toncu">
+        <createTable tableName="folders">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_folders"/>
+            </column>
+            <column name="created" type="DATETIME"/>
+            <column name="updated" type="DATETIME"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="file_name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1672858669647-1" author="toncu">
+        <createTable tableName="customer_personal_list_of_folders">
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="personal_list_of_folders_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="personal_list_of_folders_id" constraintName="uc_customer_personal_list_of_folders_personallistoffolders" tableName="customer_personal_list_of_folders"/>
+        <addForeignKeyConstraint baseColumnNames="customer_id" baseTableName="customer_personal_list_of_folders" constraintName="fk_cusperlisoffol_on_customer" referencedColumnNames="id" referencedTableName="customer"/>
+        <addForeignKeyConstraint baseColumnNames="personal_list_of_folders_id" baseTableName="customer_personal_list_of_folders" constraintName="fk_cusperlisoffol_on_folder" referencedColumnNames="id" referencedTableName="folders"/>
+    </changeSet>
+
+    <changeSet id="1672858693814-1" author="toncu">
+        <createTable tableName="notary_personal_list_of_folders">
+            <column name="notary_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="personal_list_of_folders_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="personal_list_of_folders_id" constraintName="uc_notary_personal_list_of_folders_personallistoffolders" tableName="notary_personal_list_of_folders"/>
+        <addForeignKeyConstraint baseColumnNames="personal_list_of_folders_id" baseTableName="notary_personal_list_of_folders" constraintName="fk_notperlisoffol_on_folder" referencedColumnNames="id" referencedTableName="folders"/>
+        <addForeignKeyConstraint baseColumnNames="notary_id" baseTableName="notary_personal_list_of_folders" constraintName="fk_notperlisoffol_on_notary" referencedColumnNames="id" referencedTableName="notary"/>
+    </changeSet>
+
+    <changeSet id="1672858709046-1" author="toncu">
+        <createTable tableName="registration_notary">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_registration_notary"/>
+            </column>
+            <column name="created" type="DATETIME"/>
+            <column name="updated" type="DATETIME"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="prove_document" type="LONGBLOB"/>
+        </createTable>
+        <addUniqueConstraint columnNames="email" constraintName="uc_registration_notary_email" tableName="registration_notary"/>
+    </changeSet>
+
+    <changeSet id="1672858759986-1" author="toncu">
+        <createTable tableName="folders_documents">
+            <column name="folder_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="documents_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="documents_id" constraintName="uc_folders_documents_documents" tableName="folders_documents"/>
+        <addForeignKeyConstraint baseColumnNames="documents_id" baseTableName="folders_documents" constraintName="fk_foldoc_on_document" referencedColumnNames="id" referencedTableName="documents"/>
+        <addForeignKeyConstraint baseColumnNames="folder_id" baseTableName="folders_documents" constraintName="fk_foldoc_on_folder" referencedColumnNames="id" referencedTableName="folders"/>
+    </changeSet>
+
+    <changeSet id="1672859073762-1" author="toncu">
+        <createTable tableName="roles">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_roles"/>
+            </column>
+            <column name="created" type="DATETIME"/>
+            <column name="updated" type="DATETIME"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="1672858841105-1" author="IToncu">
+        <insert tableName="roles">
+            <column name="name" value="ROLE_CUSTOMER"/>
+        </insert>
+
+        <insert tableName="roles">
+            <column name="name" value="ROLE_ADMIN"/>
+        </insert>
+
+        <insert tableName="roles">
+            <column name="name" value="ROLE_NOTARY"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="1672921054961-1" author="toncu">
+        <createTable tableName="notary_roles">
+            <column name="notary_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="notary_id" baseTableName="notary_roles" constraintName="fk_notrol_on_notary" referencedColumnNames="id" referencedTableName="notary"/>
+        <addForeignKeyConstraint baseColumnNames="roles_id" baseTableName="notary_roles" constraintName="fk_notrol_on_role" referencedColumnNames="id" referencedTableName="roles"/>
+    </changeSet>
+
+    <changeSet id="1672921083180-1" author="toncu">
+        <createTable tableName="customer_roles">
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="customer_id" baseTableName="customer_roles" constraintName="fk_cusrol_on_customer" referencedColumnNames="id" referencedTableName="customer"/>
+        <addForeignKeyConstraint baseColumnNames="roles_id" baseTableName="customer_roles" constraintName="fk_cusrol_on_role" referencedColumnNames="id" referencedTableName="roles"/>
+    </changeSet>
+
+    <changeSet id="1672921100932-1" author="toncu">
+        <createTable tableName="roles_customers_list">
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customers_list_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="customers_list_id" baseTableName="roles_customers_list" constraintName="fk_rolcuslis_on_customer" referencedColumnNames="id" referencedTableName="customer"/>
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="roles_customers_list" constraintName="fk_rolcuslis_on_role" referencedColumnNames="id" referencedTableName="roles"/>
+    </changeSet>
+
+    <changeSet id="1672921121625-1" author="toncu">
+        <createTable tableName="roles_notary_list">
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notary_list_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="notary_list_id" baseTableName="roles_notary_list" constraintName="fk_rolnotlis_on_notary" referencedColumnNames="id" referencedTableName="notary"/>
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="roles_notary_list" constraintName="fk_rolnotlis_on_role" referencedColumnNames="id" referencedTableName="roles"/>
+    </changeSet>
+
+
+    <changeSet id="1672915314603-1" author="toncu">
+        <createTable tableName="public_stack_folder">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_public_stack_folder"/>
+            </column>
+            <column name="created" type="DATETIME"/>
+            <column name="updated" type="DATETIME"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="folder_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="folder_id" baseTableName="public_stack_folder" constraintName="FK_PUBLIC_STACK_FOLDER_ON_FOLDER" referencedColumnNames="id" referencedTableName="folders"/>
+    </changeSet>
+
+</databaseChangeLog>
