@@ -59,7 +59,8 @@ public class AuthenticationRestControllerV1 {
             String token = jwtTokenProvider.createToken(username, user.getRoles());
 
             Map<Object, Object> response = new HashMap<>();
-            response.put("FullName", user.getFirstName() + " " + user.getLastName());
+            response.put("firstName", user.getFirstName());
+            response.put("lastName", user.getLastName());
             response.put("token", token);
             response.put("username", user.getUsername());
             response.put("isNotary", user instanceof Notary);

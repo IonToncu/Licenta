@@ -5,6 +5,8 @@ Frontend:
 
     - Login
         - Get data from backend for requests [X]
+        - Fix authencation manager           [-]
+            rewrite logic in service package [-]   
     - Register
         - Write register page: [X]
 
