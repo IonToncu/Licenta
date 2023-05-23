@@ -9,6 +9,5 @@ import lombok.Data;
 public class DocumentDto {
     private String fileName;
     private long id;
-    private String file;
     private FileStatus fileStatus;
 }

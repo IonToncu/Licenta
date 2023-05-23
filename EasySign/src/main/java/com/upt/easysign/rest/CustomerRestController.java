@@ -22,7 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,8 +34,9 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping(value = "/api/v1/admin/")
-@CrossOrigin("http://localhost:8080")
+@RequestMapping(value = "/api/v1/customer")
+@CrossOrigin(origins = "http://localhost:8080", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        allowedHeaders = "*", exposedHeaders = "Authorization")
 public class CustomerRestController {
 
     private final CustomerService customerService;
@@ -64,70 +67,71 @@ public class CustomerRestController {
         this.notaryRepository = notaryRepository;
     }
 
-    @PostMapping("customer_login")
-    public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
-        String emailRegex = "^(.+)@(.+)$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        try {
-            Customer customer;
-            String username = requestDto.getUsername();
-            if(pattern.matcher(username).matches()){
-                customer = customerService.getCustomerByEmail(username);
-                username = customer.getUsername();
-            }else customer = customerService.findByUsername(username);
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, requestDto.getPassword()));
-            if (customer == null) {
-                throw new UsernameNotFoundException("User with username: " + username + " not found");
-            }
+//    @PostMapping("customer_login")
+//    public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
+//        String emailRegex = "^(.+)@(.+)$";
+//        Pattern pattern = Pattern.compile(emailRegex);
+//        try {
+//            Customer customer;
+//            String username = requestDto.getUsername();
+//            if(pattern.matcher(username).matches()){
+//                customer = customerService.getCustomerByEmail(username);
+//                username = customer.getUsername();
+//            }else customer = customerService.findByUsername(username);
+//            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, requestDto.getPassword()));
+//            if (customer == null) {
+//                throw new UsernameNotFoundException("User with username: " + username + " not found");
+//            }
+//
+//            String token = jwtTokenProvider.createToken(username, customer.getRoles());
+//
+//            Map<Object, Object> response = new HashMap<>();
+//            response.put("FullName", customer.getFirstName() + " " + customer.getLastName());
+//            response.put("token", token);
+//
+//            return ResponseEntity.ok(response);
+//        } catch (AuthenticationException e) {
+//            throw new BadCredentialsException("Invalid username or password");
+//        }
+//    }
 
-            String token = jwtTokenProvider.createToken(username, customer.getRoles());
+//    @PostMapping("customer_registration")
+//    public ResponseEntity registrationCustomer(@RequestBody UserDto requestDto) {
+//        if(userService.containUserByEmail(requestDto.getEmail())) throw new BadCredentialsException("Email already exist in DB");
+//        if(userService.findByUsername(requestDto.getUsername()) != null){
+//            requestDto.setUsername(requestDto.getUsername() + UUID.randomUUID());
+//        }
+//        if(requestDto.getPassword().isEmpty()) throw new BadCredentialsException("Password is empty");
+//        Customer customer = requestDto.toCustomer();
+//        customerService.register(customer);
+//        Map<String, String> response = new HashMap<>();
+//        response.put("Response", "Ok");
+//        response.put("username", requestDto.getUsername());
+//        return ResponseEntity.ok(response);
+//    }
 
-            Map<Object, Object> response = new HashMap<>();
-            response.put("FullName", customer.getFirstName() + " " + customer.getLastName());
-            response.put("token", token);
-
-            return ResponseEntity.ok(response);
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
-    }
-
-    @PostMapping("customer_registration")
-    public ResponseEntity registrationCustomer(@RequestBody UserDto requestDto) {
-        if(userService.containUserByEmail(requestDto.getEmail())) throw new BadCredentialsException("Email already exist in DB");
-        if(userService.findByUsername(requestDto.getUsername()) != null){
-            requestDto.setUsername(requestDto.getUsername() + UUID.randomUUID());
-        }
-        if(requestDto.getPassword().isEmpty()) throw new BadCredentialsException("Password is empty");
-        Customer customer = requestDto.toCustomer();
-        customerService.register(customer);
-        Map<String, String> response = new HashMap<>();
-        response.put("Response", "Ok");
-        response.put("username", requestDto.getUsername());
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("customer_creation_folder")
-    public ResponseEntity createFolder(@RequestBody FolderDto folderDto) {
+    @PostMapping("creation_folder")
+    public ResponseEntity createFolder(@RequestParam("fileName") String fileName) {
+        FolderDto folderDto = new FolderDto();
+        folderDto.setFileName(fileName);
         Folder folder = folderDto.toFolder();
         folder = folderService.save(folder);
-        Customer customer = customerService.findByUsername(folderDto.getOwnerUsername());
+        Customer customer = customerService.findByUsername(getCurrentUsername());
         customerService.addFolder(customer, folder);
         customerRepository.save(customer);
         Map<String, String> response = new HashMap<>();
         response.put("Response", "Ok");
-        response.put("Owner", folderDto.getOwnerUsername());
-        response.put("File name", folderDto.getFileName());
+        response.put("Owner", getCurrentUsername());
+        response.put("File name", fileName);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("customer_add_Document_to_Folder")
-    public ResponseEntity<Folder> addDocumentInFolder(@RequestParam("file") MultipartFile file,
-                                              @RequestParam("username") String username,
+    @PostMapping("add_document")
+    public ResponseEntity<FolderDto> addDocumentInFolder(@RequestParam("file") MultipartFile file,
                                               @RequestParam("filename") String filename,
                                               @RequestParam("folderId") long folderId) throws Exception {
 
-        Folder folder = getFolderFromCustomerById(username, folderId);
+        Folder folder = getFolderFromCustomerById(getCurrentUsername(), folderId);
         Document document = new Document();
         document.setFile(file.getBytes());
         document.setStatus(FileStatus.PENDING);
@@ -138,7 +142,7 @@ public class CustomerRestController {
         document = documentService.save(document);
         folder.addDocumentInList(document);
         folder = folderRepository.save(folder);
-        return new ResponseEntity<>(folder, HttpStatus.OK);
+        return new ResponseEntity<>(folder.toFolderDto(), HttpStatus.OK);
     }
 
     private Folder getFolderFromCustomerById(@RequestParam("username") String username, @RequestParam("folderId") long folderId) throws Exception {
@@ -160,24 +164,10 @@ public class CustomerRestController {
         StackFolder stackFolder = stackFolderService.post(StackFolder.createStackFolder(folder));
         return new ResponseEntity<>(stackFolder.toFolderDto(), HttpStatus.OK);
     }
-    @GetMapping("/candidate/doc/{docId}")
-    @ResponseBody
-    public ResponseEntity<byte[]> getProveDocumentOfCandidate(@PathVariable long docId) throws IOException {
-        Document document = documentService.getById(docId);
-        byte[] bytes = document.getFile();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        String filename = document.getFileName();
-        headers.add("content-disposition", "inline;filename=" + filename);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
-        return response;
-    }
 
-    @PostMapping("customer/folders")
-    public ResponseEntity getFolders(@RequestBody UserDto requestDto) {
-        System.out.println(requestDto);
-       Customer customer = customerService.findByUsername(requestDto.getUsername());
+    @GetMapping("folders")
+    public ResponseEntity getFolders() {
+        Customer customer = customerService.findByUsername(getCurrentUsername());
         Map<Object, Object> response = new HashMap<>();
         int peFolders = 0, deFolders = 0, apFolders = 0;
         for (Folder folder : customer.getPersonalListOfFolders()) {
@@ -199,6 +189,35 @@ public class CustomerRestController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("folder/{folderId}") //todo add exceptions, please don't forget
+    public ResponseEntity getFolder(@PathVariable long folderId) {
+        Customer customer = customerService.findByUsername(getCurrentUsername());
+        Folder folder = folderRepository.getById(folderId);
+        if(folder == null) return ResponseEntity.ok("Folder not found");
+        Map<Object, Object> response = new HashMap<>();
+        if(customer.getPersonalListOfFolders().contains(folder)){
+            response.put("folder", folder.toFolderDto());
+            return ResponseEntity.ok(response);
+        }
+       return ResponseEntity.ok("Folder not found");
+    }
+
+    @GetMapping("/doc/{docId}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getProveDocumentOfCandidate(@PathVariable long docId) throws IOException {
+        Document document = documentService.getById(docId);
+        byte[] bytes = document.getFile();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/pdf"));
+        String filename = document.getFileName();
+        headers.add("content-disposition", "inline;filename=" + filename);
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
+        return response;
+    }
+
+
+
     @PostMapping("customer/choose_notary_to_sign")
     public ResponseEntity<Notary> chooseNotaryNoSign(@RequestParam("customerUsername") String customerUsername,
                                                           @RequestParam("notaryUsername") String notaryUsername,
@@ -210,5 +229,14 @@ public class CustomerRestController {
         notary = notaryRepository.save(notary);
         return new ResponseEntity<>(notary, HttpStatus.OK);
     }
+
+    public String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName();
+        }
+        return null;
+    }
+
 
 }

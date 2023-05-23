@@ -37,8 +37,8 @@ public class Document extends File{
         DocumentDto documentDto = new DocumentDto();
         documentDto.setId(getId());
         documentDto.setFileName(getFileName());
-        documentDto.setFile("/api/v1/admin/candidate/doc/" + getId());
         documentDto.setFileStatus(getStatus());
         return documentDto;
     }
+
 }
