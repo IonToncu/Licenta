@@ -52,13 +52,11 @@ public class RegisterRestController{
             response.put("Response", "Email already exist in DB");
             return ResponseEntity.ok(response);
         }
-        if(userService.findByUsername(requestDto.getUsername()) != null){
+       if(userService.findByUsername(requestDto.getUsername()) != null){
             requestDto.setUsername(requestDto.getUsername() + UUID.randomUUID());
         }
-        if(requestDto.getPassword().isEmpty()) throw new BadCredentialsException("Password is empty");
+
         Customer customer = requestDto.toCustomer();
-        customer.setCreated(new Date());
-        customer.setUpdated(new Date());
         customerService.register(customer);
         Map<String, String> response = new HashMap<>();
         response.put("Response", "Ok");

@@ -131,7 +131,7 @@ public class CustomerRestController {
                                               @RequestParam("filename") String filename,
                                               @RequestParam("folderId") long folderId) throws Exception {
 
-        Folder folder = getFolderFromCustomerById(getCurrentUsername(), folderId);
+         Folder folder = getFolderFromCustomerById(getCurrentUsername(), folderId);
         Document document = new Document();
         document.setFile(file.getBytes());
         document.setStatus(FileStatus.PENDING);
@@ -158,9 +158,9 @@ public class CustomerRestController {
         return folder;
     }
 
-    @PostMapping("customer_post_Folder")
-    public ResponseEntity<FolderDto> postFolderPublic(@RequestBody FolderDto folderDto) throws Exception {
-        Folder folder = getFolderFromCustomerById(folderDto.getOwnerUsername(), folderDto.getId());
+    @GetMapping("customer_post_Folder/{folderId}")
+    public ResponseEntity<FolderDto> postFolderPublic(@PathVariable long folderId) throws Exception {
+        Folder folder = getFolderFromCustomerById(getCurrentUsername(), folderId);
         StackFolder stackFolder = stackFolderService.post(StackFolder.createStackFolder(folder));
         return new ResponseEntity<>(stackFolder.toFolderDto(), HttpStatus.OK);
     }

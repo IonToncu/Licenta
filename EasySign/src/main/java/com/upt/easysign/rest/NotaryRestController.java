@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping(value = "/api/v1/admin/")
+@RequestMapping(value = "/api/v1/admins/")
 @CrossOrigin("http://localhost:8080")
 public class NotaryRestController {
     private final NotaryService notaryService;
@@ -93,10 +95,10 @@ public class NotaryRestController {
         }
     }
 
-    @PostMapping("notary/allFolders")
-    public ResponseEntity getAllFolders(@RequestBody UserDto requestDto){
-        System.out.println(requestDto.getUsername());
-        Notary notary = notaryService.findByUsername(requestDto.getUsername());
+    @GetMapping("notary/allFolders")
+    public ResponseEntity getAllFolders(){
+        System.out.println(getCurrentUsername());
+        Notary notary = notaryService.findByUsername(getCurrentUsername());
         List<Folder> personalFolders = notary.getPersonalListOfFolders();
         List<FolderDto> personalFoldersDto = new ArrayList<>();
         List<StackFolder> publicFolders = stackFolderService.getAll();
@@ -137,6 +139,13 @@ public class NotaryRestController {
         Map<String, Object> response = new HashMap<>();
         response.put("notary", folder);
         return ResponseEntity.ok(response);
+    }
+    public String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName();
+        }
+        return null;
     }
 
 }

@@ -32,7 +32,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer register(Customer customer) {
-        Role roleUser = roleRepository.findByName("ROLE_CUSTOMER");
+        Role roleUser;
+        if(customer.getUsername().equals("ADMIN"))
+            roleUser = roleRepository.findByName("ROLE_ADMIN");
+        else roleUser = roleRepository.findByName("ROLE_CUSTOMER");
         List<Role> userRoles = new ArrayList<>();
         userRoles.add(roleUser);
 

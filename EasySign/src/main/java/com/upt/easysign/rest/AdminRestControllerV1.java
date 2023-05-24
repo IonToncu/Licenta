@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -50,12 +48,14 @@ public class AdminRestControllerV1 {
     }
 
     @GetMapping(value = "candidates")
-    public ResponseEntity<List<AdminNotaryCandidateDto>> getAllNotaryCandidates(){
+    public ResponseEntity getAllNotaryCandidates(){
         List<AdminNotaryCandidateDto> adminNotaryCandidateDtoList = new ArrayList<AdminNotaryCandidateDto>();
         notaryQueueService.getAll().forEach(candidate -> {
             adminNotaryCandidateDtoList.add(AdminNotaryCandidateDto.fromNotaryCandidate(candidate));
         });
-        return new ResponseEntity<>(adminNotaryCandidateDtoList, HttpStatus.OK);
+        Map<Object, Object> response = new HashMap<>();
+        response.put("candidate", adminNotaryCandidateDtoList);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(value = "candidates/delete/{id}")
@@ -76,7 +76,6 @@ public class AdminRestControllerV1 {
     @GetMapping("/candidate_document/{id}")
     @ResponseBody
     public ResponseEntity<byte[]> getProveDocumentOfCandidate(@PathVariable long id) throws IOException {
-        File file = new File(System.getProperty("user.dir") + "/file.pdf");
         NotaryCandidate notaryCandidate = notaryQueueService.getNotaryCandidateById(id);
         byte[] bytes = notaryCandidate.getProveDocument();
         HttpHeaders headers = new HttpHeaders();

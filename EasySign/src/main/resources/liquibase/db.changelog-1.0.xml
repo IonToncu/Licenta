@@ -149,7 +149,10 @@
         <insert tableName="roles">
             <column name="name" value="ROLE_NOTARY"/>
         </insert>
+
     </changeSet>
+
+
 
     <changeSet id="1672921054961-1" author="toncu">
         <createTable tableName="notary_roles">
