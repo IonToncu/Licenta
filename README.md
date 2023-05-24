@@ -5,20 +5,20 @@ Frontend:
 
     - Login
         - Get data from backend for requests [X]
-        - Fix authencation manager           [-]
-            rewrite logic in service package [-]   
+        - Fix authencation manager           [X]
+            rewrite logic in service package [X]   
     - Register
         - Write register page: [X]
 
         Test: Login as Customer     [X]
-                        as Notar    [-]
+                        as Notar    [X]
         Customer:
-            Home page                                       [-]
-                -All folders                                [-]
-            Client page                                     [-]
-                -Standard user information                  [-]
-            Create Folder page                              [-]
-                -Add files in folders                       [-]
+            Home page                                       [X]
+                -All folders                                [X]
+            Client page                                     [X]
+                -Standard user information                  [X]
+            Create Folder page                              [X]
+                -Add files in folders                       [X]
                     -propose to sign                        [-]
         Notar:
             Home page                                       [-]
@@ -35,8 +35,23 @@ Backend:
     - Regenerate project with new name  [X]
         - Uploading file                [X]
     - Add digital sign for notar        [-]
-    - Make request safty                [-]
+    - Make request safty                [X]
 ---
+## Task pe 5/24/2023
+Frontend:
+
+    Customer: post folder               [-]
+    
+    Home page for notar:                [-]
+        public folder                   [-]
+        personali signed or not folder  [-]
+        sign folder/file                [-]
+        
+Backend:
+
+    Notar:
+        Sign document                   [-]
+            
 
 ## Explicatii
 Notite:
