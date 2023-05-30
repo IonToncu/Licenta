@@ -17,6 +17,9 @@ public class FolderDto {
     private String ownerUsername;
     private List<DocumentDto> documentDtoList;
     private FileStatus fileStatus;
+    private Date updated;
+    private Boolean isPosted;
+    private Boolean isShared;
 
     public void addToDocuments(DocumentDto documentDto){
         if (this.documentDtoList == null) documentDtoList = new ArrayList<>();
@@ -29,6 +32,8 @@ public class FolderDto {
         folder.setUpdated(new Date());
         folder.setCreated(new Date());
         folder.setStatus(FileStatus.PENDING);
+        folder.setIsShared(false);
+        folder.setIsPosted(false);
         return folder;
     }
 }

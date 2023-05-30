@@ -8,7 +8,7 @@ public interface NotaryQueueService {
     NotaryCandidate addAsCandidate(NotaryCandidate notaryCandidate);
     List<NotaryCandidate> getAll();
     Boolean deleteCandidate(NotaryCandidate notaryCandidate);
-    Boolean addCandidateToNotary(NotaryCandidate notaryCandidate);
+    Boolean addCandidateToNotary(NotaryCandidate notaryCandidate) throws Exception;
     NotaryCandidate getNotaryCandidateByEmail(String email);
     NotaryCandidate getNotaryCandidateById(long id);
 }

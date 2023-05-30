@@ -17,7 +17,7 @@
             <column name="created" type="DATETIME"/>
             <column name="updated" type="DATETIME"/>
             <column name="status" type="VARCHAR(255)"/>
-            <column name="file" type="LONGBLOB"/>
+            <column name="certificate" type="LONGBLOB"/>
         </createTable>
         <addUniqueConstraint columnNames="email" constraintName="uc_notary_email" tableName="notary"/>
     </changeSet>
@@ -61,8 +61,12 @@
             <column name="updated" type="DATETIME"/>
             <column name="status" type="VARCHAR(255)"/>
             <column name="file_name" type="VARCHAR(255)"/>
+            <column name="is_posted" type="BOOLEAN"/>
+            <column name="is_shared" type="BOOLEAN"/>
         </createTable>
     </changeSet>
+
+
 
     <changeSet id="1672858669647-1" author="toncu">
         <createTable tableName="customer_personal_list_of_folders">

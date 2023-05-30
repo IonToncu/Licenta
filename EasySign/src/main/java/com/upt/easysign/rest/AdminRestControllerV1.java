@@ -66,7 +66,7 @@ public class AdminRestControllerV1 {
     }
 
     @GetMapping(value = "candidates/approve/{id}")
-    public ResponseEntity<String> approveCandidate(@PathVariable long id){
+    public ResponseEntity<String> approveCandidate(@PathVariable long id) throws Exception {
         NotaryCandidate notaryCandidate = notaryQueueService.getNotaryCandidateById(id);
         notaryQueueService.addCandidateToNotary(notaryCandidate);
         return new ResponseEntity<>("Approved successfully", HttpStatus.OK);
@@ -87,49 +87,7 @@ public class AdminRestControllerV1 {
         return response;
     }
 
-    @GetMapping("/add_notary")
-    @ResponseBody
-    public ResponseEntity<Notary> addNotary(){
-        Notary notary = new Notary();
-        notary.setUsername("notary");
-        notary.setFirstName("notary");
-        notary.setLastName("notary");
-        notary.setEmail("email");
-        notary.setPassword("password");
-        notary.setCreated(new Date());
-        notary.setUpdated(new Date());
-        notary.setStatus(Status.ACTIVE);
-        notaryService.register(notary);
-        return new ResponseEntity<>(notary, HttpStatus.OK);
-    }
 
-    @GetMapping("/add_customer")
-    @ResponseBody
-    public ResponseEntity<Customer> addCustomer(){
-        Customer customer = new Customer();
-        customer.setUsername("customer");
-        customer.setFirstName("customer");
-        customer.setLastName("customer");
-        customer.setEmail("email@");
-        customer.setPassword("password");
-        customer.setCreated(new Date());
-        customer.setUpdated(new Date());
-        customer.setStatus(Status.ACTIVE);
-        customerService.register(customer);
-        return new ResponseEntity<>(customer, HttpStatus.OK);
-    }
-
-    @GetMapping("/add_Folder")
-    @ResponseBody
-    public ResponseEntity<Folder> addFolder(){
-        Folder folder = new Folder();
-        folder.setCreated(new Date());
-        folder.setUpdated(new Date());
-        folder.setStatus(FileStatus.PENDING);
-        folder.setFileName("new folder 1");
-        folderService.save(folder);
-        return new ResponseEntity<>(folder, HttpStatus.OK);
-    }
 
     @GetMapping("/add_Document")
     @ResponseBody

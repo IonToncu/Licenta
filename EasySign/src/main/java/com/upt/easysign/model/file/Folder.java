@@ -4,6 +4,7 @@ import com.upt.easysign.dto.FolderDto;
 import lombok.*;
 import org.hibernate.Hibernate;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -20,6 +21,11 @@ import java.util.Objects;
 public class Folder extends File{
     @OneToMany
     private List<Document> documents;
+
+    @Column(name = "is_posted")
+    private Boolean isPosted;
+    @Column(name = "is_shared")
+    private Boolean isShared;
 
     public void addDocumentInList(Document document){
         if(documents == null) documents = new ArrayList<>();
@@ -43,6 +49,8 @@ public class Folder extends File{
         folderDto.setId(getId());
         folderDto.setFileName(getFileName());
         folderDto.setFileStatus(getStatus());
+        folderDto.setUpdated(getUpdated());
+        folderDto.setIsPosted(getIsPosted());
         getDocuments().forEach(document -> {
             folderDto.addToDocuments(document.toDto());
         });

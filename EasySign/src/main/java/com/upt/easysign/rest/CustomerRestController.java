@@ -115,6 +115,7 @@ public class CustomerRestController {
         FolderDto folderDto = new FolderDto();
         folderDto.setFileName(fileName);
         Folder folder = folderDto.toFolder();
+        folder.setIsPosted(false);
         folder = folderService.save(folder);
         Customer customer = customerService.findByUsername(getCurrentUsername());
         customerService.addFolder(customer, folder);
@@ -161,6 +162,7 @@ public class CustomerRestController {
     @GetMapping("customer_post_Folder/{folderId}")
     public ResponseEntity<FolderDto> postFolderPublic(@PathVariable long folderId) throws Exception {
         Folder folder = getFolderFromCustomerById(getCurrentUsername(), folderId);
+        folder.setIsPosted(true);
         StackFolder stackFolder = stackFolderService.post(StackFolder.createStackFolder(folder));
         return new ResponseEntity<>(stackFolder.toFolderDto(), HttpStatus.OK);
     }
@@ -189,17 +191,30 @@ public class CustomerRestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("folder/{folderId}") //todo add exceptions, please don't forget
-    public ResponseEntity getFolder(@PathVariable long folderId) {
-        Customer customer = customerService.findByUsername(getCurrentUsername());
-        Folder folder = folderRepository.getById(folderId);
-        if(folder == null) return ResponseEntity.ok("Folder not found");
-        Map<Object, Object> response = new HashMap<>();
-        if(customer.getPersonalListOfFolders().contains(folder)){
-            response.put("folder", folder.toFolderDto());
-            return ResponseEntity.ok(response);
+    @GetMapping("folder/{folderId}")
+    public ResponseEntity<?> getFolder(@PathVariable long folderId) {
+        try {
+            Customer customer = customerService.findByUsername(getCurrentUsername());
+            Folder folder = folderRepository.getById(folderId);
+            if (folder == null) {
+                return ResponseEntity.notFound().build(); // Return 404 Not Found if folder not found
+            }
+
+            Map<String, Object> response = new HashMap<>();
+
+            if (customer.getPersonalListOfFolders().contains(folder)) {
+                response.put("folder", folder.toFolderDto());
+                response.put("isPosted", folder.getIsPosted());
+                response.put("isShared", folder.getIsShared());
+
+
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied"); // Return 403 Forbidden if user doesn't have access to the folder
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred"); // Return 500 Internal Server Error for any other exceptions
         }
-       return ResponseEntity.ok("Folder not found");
     }
 
     @GetMapping("/doc/{docId}")
@@ -214,6 +229,31 @@ public class CustomerRestController {
         headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
         ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
         return response;
+    }
+
+    @GetMapping("share_folder/{folderId}")
+    public ResponseEntity<?> shareFolder(@PathVariable long folderId) {
+        try {
+            Folder folder = folderRepository.getById(folderId);
+            if (folder == null) {
+                return ResponseEntity.notFound().build(); // Return 404 Not Found if folder not found
+            }
+            folder.setIsShared(true);
+            folderRepository.save(folder);
+            Map<String, Object> response = new HashMap<>();
+
+            if (folder.getIsShared()) {
+                response.put("folder", folder.toFolderDto());
+                response.put("isPosted", folder.getIsPosted());
+                response.put("isShared", folder.getIsShared());
+
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied"); // Return 403 Forbidden if user doesn't have access to the folder
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred"); // Return 500 Internal Server Error for any other exceptions
+        }
     }
 
 

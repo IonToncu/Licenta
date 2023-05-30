@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.upt.easysign.certificate.NotaryCertificate.createKeyStore;
+
 @Service
 @Slf4j
 public class NotaryQueueServiceImpl implements NotaryQueueService {
@@ -58,7 +60,7 @@ public class NotaryQueueServiceImpl implements NotaryQueueService {
     }
 
     @Override
-    public Boolean addCandidateToNotary(NotaryCandidate notaryCandidate) {
+    public Boolean addCandidateToNotary(NotaryCandidate notaryCandidate) throws Exception {
         if(userService.containUserByEmail(notaryCandidate.getEmail())) {
             log.info("Email for candidate: {} already is taken", notaryCandidate);
             return false;
@@ -66,12 +68,18 @@ public class NotaryQueueServiceImpl implements NotaryQueueService {
         if(userService.findByUsername(notaryCandidate.getUsername()) !=null){
             notaryCandidate.setUsername(notaryCandidate.getUsername() + UUID.randomUUID());
         }
+//        byte[] keyStoreFile = createKeyStore(notaryCandidate.getFirstName(),
+//                notaryCandidate.getLastName(),
+//                "password",
+//                "password");
+
 
         Role roleUser = roleRepository.findByName("ROLE_NOTARY");
         List<Role> userRoles = new ArrayList<>();
         userRoles.add(roleUser);
 
         Notary notary = notaryCandidate.toNotary();
+//        notary.setCertificate(keyStoreFile);
         notary.setRoles(userRoles);
         notaryRepository.save(notary);
         log.info("IN register - notary: {} successfully registered", notaryCandidate);

@@ -2,6 +2,7 @@ package com.upt.easysign.service.impl;
 
 import com.upt.easysign.model.Role;
 import com.upt.easysign.model.Status;
+import com.upt.easysign.model.file.Folder;
 import com.upt.easysign.model.user.Notary;
 import com.upt.easysign.repository.RoleRepository;
 import com.upt.easysign.repository.user_repository.NotaryRepository;
@@ -63,5 +64,18 @@ public class NotaryServiceImpl implements NotaryService {
     @Override
     public Notary getNotaryByEmail(String email) {
         return notaryRepository.findByEmail(email);
+    }
+
+    public Folder getNotaryFolderById(String username, long folderId) {
+        Notary notary = notaryRepository.findByUsername(username);
+        if (notary != null) {
+            List<Folder> personalListOfFolders = notary.getPersonalListOfFolders();
+            for (Folder folder : personalListOfFolders) {
+                if (folder.getId() == folderId) {
+                    return folder;
+                }
+            }
+        }
+        return null; // Folder not found
     }
 }

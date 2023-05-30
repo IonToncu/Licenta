@@ -38,6 +38,7 @@ public class Document extends File{
         documentDto.setId(getId());
         documentDto.setFileName(getFileName());
         documentDto.setFileStatus(getStatus());
+        documentDto.setUpdated(getUpdated());
         return documentDto;
     }
 
