@@ -168,7 +168,7 @@ public class NotaryRestController {
     public ResponseEntity<?> addToPersonal(@PathVariable long folderId) {
         try {
             Notary notary = notaryService.findByUsername(getCurrentUsername());
-            StackFolder stackFolder = stackFolderService.getById(folderId);
+            StackFolder stackFolder = stackFolderService.getByFolderId(folderId);
 
             if (stackFolder == null) {
                 return ResponseEntity.notFound().build(); // Return 404 Not Found if stack folder not found
@@ -195,6 +195,7 @@ public class NotaryRestController {
             if (document == null) {
                 return ResponseEntity.notFound().build(); // Return 404 Not Found if document not found
             }
+            if(document.getStatus() == CHECKED) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Document is already signed");
 
             byte[] documentFile = document.getFile();
             Notary notary = notaryService.findByUsername(getCurrentUsername());
@@ -246,6 +247,7 @@ public class NotaryRestController {
     @GetMapping("notary/check_certificate")
     public ResponseEntity<?> checkCertificateIfExist() throws Exception {
         Notary notary = notaryRepository.findByUsername(getCurrentUsername());
+
         Map<String, Object> response = new HashMap<>();
         response.put("hasCertificate", notary.getCertificate() != null);
         return ResponseEntity.ok(response);
@@ -259,8 +261,10 @@ public class NotaryRestController {
                         password,
                         password);
         notary.setCertificate(keyStoreFile);
+        notaryRepository.save(notary);
         Map<String, Object> response = new HashMap<>();
         response.put("status", "Certificate successfully created");
+        System.out.println(response);
         return ResponseEntity.ok(response);
     }
 

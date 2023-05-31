@@ -36,7 +36,7 @@ public class StackFolder {
 
     public FolderDto toFolderDto(){
         FolderDto folderDto = new FolderDto();
-        folderDto.setId(getId());
+        folderDto.setId(folder.getId());
         folderDto.setFileName(folder.getFileName());
         folderDto.setFileStatus(folder.getStatus());
         folder.getDocuments().forEach(document -> {
