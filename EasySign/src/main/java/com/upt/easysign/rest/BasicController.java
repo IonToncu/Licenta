@@ -9,6 +9,7 @@ import com.upt.easysign.repository.user_repository.CustomerRepository;
 import com.upt.easysign.repository.user_repository.NotaryRepository;
 import com.upt.easysign.security.jwt.JwtTokenProvider;
 import com.upt.easysign.service.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,6 +37,7 @@ public class BasicController {
     private final NotaryService notaryService;
     private final NotaryRepository notaryRepository;
 
+    @Autowired
     public BasicController(CustomerService customerService, FolderService folderService, DocumentService documentService, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService, CustomerRepository customerRepository, FolderRepository folderRepository, PublicStackFolderService stackFolderService, NotaryService notaryService, NotaryRepository notaryRepository) {
         this.customerService = customerService;
         this.folderService = folderService;

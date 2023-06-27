@@ -195,7 +195,7 @@ public class NotaryRestController {
             if (document == null) {
                 return ResponseEntity.notFound().build(); // Return 404 Not Found if document not found
             }
-            if(document.getStatus() == CHECKED) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Document is already signed");
+            if(document.getStatus() == CHECKED) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Document is already signed ");
 
             byte[] documentFile = document.getFile();
             Notary notary = notaryService.findByUsername(getCurrentUsername());

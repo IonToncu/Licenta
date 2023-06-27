@@ -24,7 +24,9 @@ public class NotaryServiceImpl implements NotaryService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public NotaryServiceImpl(NotaryRepository notaryRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
+    public NotaryServiceImpl(NotaryRepository notaryRepository,
+                             RoleRepository roleRepository,
+                             BCryptPasswordEncoder passwordEncoder) {
         this.notaryRepository = notaryRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
